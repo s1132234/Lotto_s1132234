@@ -47,25 +47,36 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Play(modifier: Modifier = Modifier) {
     val context = LocalContext.current
+
+    // Use a mutable state for the number you want to change
     var lucky by remember {
         mutableStateOf((1..100).random())
     }
 
-    Column (
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .pointerInput(Unit) { // Use pointerInput for touch events
+            .pointerInput(Unit) {
                 detectTapGestures(
-                    onPress = { offset -> // onPress gives you the coordinates
+                    onPress = { offset ->
+                        // This part handles the touch coordinates, you can keep it or remove it
                         val x = offset.x.toInt()
                         val y = offset.y.toInt()
                         Toast.makeText(context, "螢幕觸控: x=$x, y=$y", Toast.LENGTH_SHORT).show()
+                    },
+                    onTap = {
+                        // Short press (tap) to decrease the number
+                        lucky -= 1
+                    },
+                    onLongPress = {
+                        // Long press to increase the number
+                        lucky += 1
                     }
                 )
             },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-    ){
+    ) {
         Text(
             text = "樂透數字(1-100)為 $lucky"
         )
@@ -74,8 +85,9 @@ fun Play(modifier: Modifier = Modifier) {
             onClick = { lucky = (1..100).random() }
         ) {
             Text("重新產生樂透碼")
-            Text("張佑先共同編輯程式")
+
         }
+        Text("張佑先共同編輯程式")
     }
 }
 
