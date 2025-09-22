@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import tw.edu.pu.csim.tcyang.lotto.ui.theme.LottoTheme
 
 import androidx.compose.runtime.setValue // 引入 setValue
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 
 
@@ -44,28 +46,29 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Play(modifier: Modifier = Modifier) {
-
     val context = LocalContext.current
-
-    //var lucky = (1..100).random()
     var lucky by remember {
         mutableStateOf((1..100).random())
     }
 
-    Column (modifier = modifier
-        .fillMaxSize()
-        .clickable { // <-- 新增 clickable modifier
-
-            Toast.makeText(context, "螢幕觸控(資管二A黃士豪)", Toast.LENGTH_SHORT).show()
-
-        },
+    Column (
+        modifier = modifier
+            .fillMaxSize()
+            .pointerInput(Unit) { // Use pointerInput for touch events
+                detectTapGestures(
+                    onPress = { offset -> // onPress gives you the coordinates
+                        val x = offset.x.toInt()
+                        val y = offset.y.toInt()
+                        Toast.makeText(context, "螢幕觸控: x=$x, y=$y", Toast.LENGTH_SHORT).show()
+                    }
+                )
+            },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-        ){
+    ){
         Text(
             text = "樂透數字(1-100)為 $lucky"
         )
-
 
         Button(
             onClick = { lucky = (1..100).random() }
@@ -73,9 +76,9 @@ fun Play(modifier: Modifier = Modifier) {
             Text("重新產生樂透碼")
             Text("張佑先共同編輯程式")
         }
-
     }
-
-
-
 }
+
+
+
+
